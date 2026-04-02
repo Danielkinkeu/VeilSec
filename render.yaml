@@ -1,0 +1,29 @@
+# render.yaml à la racine du projet
+services:
+  - type: web
+    name: veilsec-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: LLM_PROVIDER
+        value: groq
+      - key: GROQ_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        value: sqlite:///./veilsec.db
+      - key: NVD_DAYS_BACK
+        value: 1
+      - key: MAX_CVE_PER_RUN
+        value: 100
+      - key: NVD_INTERVAL_HOURS
+        value: 6
+      - key: CISA_INTERVAL_HOURS
+        value: 12
+      - key: GITHUB_INTERVAL_HOURS
+        value: 6
+      - key: EXPLOITDB_INTERVAL_HOURS
+        value: 2
