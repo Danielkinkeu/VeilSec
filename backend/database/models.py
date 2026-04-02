@@ -1,8 +1,21 @@
 # backend/database/models.py
 
-from sqlalchemy import Column, String, Float, Integer, DateTime, Text, Boolean, JSON
+from sqlalchemy import Column, String, Float, Integer, DateTime, Text, Boolean
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.sqlite import JSON as SQLiteJSON
 from sqlalchemy.sql import func
-from database.db import Base
+from database.db import Base, engine
+
+
+
+# Détecter le type de base pour choisir le bon type JSON
+def get_json_type():
+    if "postgresql" in str(engine.url):
+        return JSONB  # plus performant sur PostgreSQL
+    return SQLiteJSON
+
+
+JsonType = get_json_type() 
 
 
 class CVE(Base):
@@ -11,48 +24,47 @@ class CVE(Base):
     """
     __tablename__ = "cves"
 
-    # === Identifiants ===
-    id          = Column(String, primary_key=True)   # ex: CVE-2024-1234
-    source      = Column(String, nullable=False)      # nvd | cisa | github | exploitdb
+    # Identifiants
+    id          = Column(String, primary_key=True)
+    source      = Column(String, nullable=False)
 
-    # === Informations de base ===
+    # Informations de base
     titre       = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     lien        = Column(String, nullable=True)
 
-    # === Scoring ===
-    score_cvss  = Column(Float, nullable=True)       # 0.0 à 10.0
-    criticite   = Column(String, nullable=True)      # CRITIQUE | HAUTE | MOYENNE | FAIBLE
+    # Scoring
+    score_cvss  = Column(Float, nullable=True)
+    criticite   = Column(String, nullable=True)
 
-    # === Cibles ===
-    systemes    = Column(JSON, nullable=True)        # ["Windows", "Apache", "Linux"]
-    cwe         = Column(String, nullable=True)      # ex: CWE-79 (type de faille)
+    # Cibles
+    systemes    = Column(JsonType, nullable=True)
+    cwe         = Column(String, nullable=True)
 
-    # === Contexte ===
-    auteur      = Column(String, nullable=True)      # chercheur ou organisation
-    date_publication = Column(DateTime, nullable=True)
+    # Contexte
+    auteur      = Column(String, nullable=True)
+    date_publication = Column(DateTime(timezone=True), nullable=True)
 
-    # === Enrichissement IA ===
-    resume_ia         = Column(Text, nullable=True)   # résumé généré par l'IA
-    recommandation_ia = Column(Text, nullable=True)   # mitigation suggérée par l'IA
-    impact_ia   = Column(Text, nullable=True)    # ce que l'attaquant peut faire
-    urgence_ia  = Column(String, nullable=True)  # IMMEDIATE | HAUTE | NORMALE | FAIBLE
-    enrichi           = Column(Boolean, default=False) # a-t-il été traité par l'IA ?
-    llm_provider      = Column(String, nullable=True)  # quel modèle a enrichi ce CVE
+    # Enrichissement IA
+    resume_ia         = Column(Text, nullable=True)
+    recommandation_ia = Column(Text, nullable=True)
+    impact_ia         = Column(Text, nullable=True)
+    urgence_ia        = Column(String, nullable=True)
+    enrichi           = Column(Boolean, default=False)
+    llm_provider      = Column(String, nullable=True)
 
-    # === Statut ===
-    actif_exploit = Column(Boolean, default=False)   # exploité activement (CISA KEV)
-    nouveau       = Column(Boolean, default=True)    # apparu dans la dernière collecte
+    # Statut
+    actif_exploit = Column(Boolean, default=False)
+    nouveau       = Column(Boolean, default=True)
 
-    # === Timestamps ===
-    date_collecte = Column(DateTime, server_default=func.now())
-    date_maj      = Column(DateTime, onupdate=func.now())
+    # Timestamps
+    date_collecte = Column(DateTime(timezone=True), server_default=func.now())
+    date_maj      = Column(DateTime(timezone=True), onupdate=func.now())
 
     def __repr__(self):
         return f"<CVE {self.id} | {self.criticite} | {self.source}>"
 
     def to_dict(self):
-        """Convertit le modèle en dictionnaire pour l'API."""
         return {
             "id": self.id,
             "source": self.source,
@@ -67,6 +79,8 @@ class CVE(Base):
             "date_publication": self.date_publication.isoformat() if self.date_publication else None,
             "resume_ia": self.resume_ia,
             "recommandation_ia": self.recommandation_ia,
+            "impact_ia": self.impact_ia,
+            "urgence_ia": self.urgence_ia,
             "enrichi": self.enrichi,
             "llm_provider": self.llm_provider,
             "actif_exploit": self.actif_exploit,
@@ -82,14 +96,14 @@ class Source(Base):
     """
     __tablename__ = "sources"
 
-    id            = Column(Integer, primary_key=True, autoincrement=True)
-    nom           = Column(String, unique=True, nullable=False)  # nvd | cisa | github | exploitdb
-    actif         = Column(Boolean, default=True)
-    derniere_collecte = Column(DateTime, nullable=True)
-    nb_cve_total  = Column(Integer, default=0)    # total collecté depuis le début
-    nb_cve_dernier = Column(Integer, default=0)   # collecté lors de la dernière exécution
-    statut        = Column(String, default="idle") # idle | running | success | error
-    erreur        = Column(Text, nullable=True)    # message d'erreur si échec
+    id                = Column(Integer, primary_key=True, autoincrement=True)
+    nom               = Column(String, unique=True, nullable=False)
+    actif             = Column(Boolean, default=True)
+    derniere_collecte = Column(DateTime(timezone=True), nullable=True)
+    nb_cve_total      = Column(Integer, default=0)
+    nb_cve_dernier    = Column(Integer, default=0)
+    statut            = Column(String, default="idle")
+    erreur            = Column(Text, nullable=True)
 
     def __repr__(self):
         return f"<Source {self.nom} | {self.statut}>"

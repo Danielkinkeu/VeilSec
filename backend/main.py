@@ -76,7 +76,7 @@ app.include_router(sources.router)
 # CORS — permet au frontend React de communiquer avec le backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=["http://localhost:3000", "http://localhost:5173", "https://veilsec.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

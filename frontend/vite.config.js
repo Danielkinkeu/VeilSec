@@ -10,7 +10,8 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': 'http://localhost:8000'
+      '/api': 'https://veilsec.onrender.com'
+      // '/api': 'http://localhost:8000'
     }
   }
 })
