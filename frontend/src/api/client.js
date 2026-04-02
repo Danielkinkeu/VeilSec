@@ -1,9 +1,15 @@
 // frontend/src/api/client.js
 import axios from 'axios'
 
+// En production (Vercel) → URL Render directe
+// En développement (local) → proxy Vite vers localhost
+const BASE_URL = import.meta.env.PROD
+  ? 'https://veilsec.onrender.com/api'
+  : '/api'
+
 const api = axios.create({
-  baseURL: '/api',
-  timeout: 10000,
+  baseURL: BASE_URL,
+  timeout: 15000,
 })
 
 export const getCVEs = (params = {}) =>
