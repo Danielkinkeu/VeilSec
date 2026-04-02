@@ -3,7 +3,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.responses import JSONResponse
 from config import settings
 from database.db import init_db
 from collectors.scheduler import (
@@ -84,14 +84,14 @@ app.add_middleware(
 
 
 # Route de santé — pour vérifier que le backend tourne
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health():
-    return {
+    return JSONResponse({
         "status": "ok",
         "projet": settings.PROJECT_NAME,
         "version": settings.VERSION,
         "llm_provider": settings.LLM_PROVIDER,
-    }
+    })
 
 
 # Route de test rapide

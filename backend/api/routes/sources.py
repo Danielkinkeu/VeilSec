@@ -7,7 +7,7 @@ from typing import List
 from database.db import get_db
 from database.models import Source
 from api.schemas import SourceSchema
-from collectors.scheduler import task_nvd
+from collectors.scheduler import task_nvd, task_cisa, task_github, task_exploitdb
 
 router = APIRouter(prefix="/api/sources", tags=["Sources"])
 
@@ -29,6 +29,9 @@ async def trigger_source(nom: str):
     """
     sources_disponibles = {
         "nvd": task_nvd,
+         "cisa":     task_cisa,
+        "github":   task_github,
+        "exploitdb": task_exploitdb,
     }
 
     if nom not in sources_disponibles:
