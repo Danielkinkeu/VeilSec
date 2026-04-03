@@ -9,7 +9,7 @@ const BASE_URL = import.meta.env.PROD
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 15000,
+  timeout: 120000,
 })
 
 export const getCVEs = (params = {}) =>
@@ -29,5 +29,8 @@ export const getSources = () =>
 
 export const triggerSource = (nom) =>
   api.post(`/sources/${nom}/trigger`).then(r => r.data)
+
+export const analyzeStack = (stackData) =>
+  api.post('/analyze/stack', stackData).then(r => r.data)
 
 export default api

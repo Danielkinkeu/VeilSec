@@ -227,7 +227,7 @@ class DeepSeekLLM(BaseLLM):
             }
 
             try:
-                async with httpx.AsyncClient(timeout=60.0) as client:
+                async with httpx.AsyncClient(timeout=120.0) as client:
                     response = await client.post(
                         self.BASE_URL,
                         json=payload,

@@ -6,19 +6,41 @@ import CVEList from './pages/CVEList'
 import Sources from './pages/Sources'
 import AdvancedSearch from './pages/AdvancedSearch'
 
+import StackAnalyzer from './pages/StackAnalyzer'
+import StackResults from './pages/StackResults'
+import { Search as SearchIcon } from 'lucide-react'
+
 const NAV = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'cves', label: 'CVE List', icon: List },
   { id: 'search', label: 'Recherche avancée', icon: Search },
+   { id: 'stack', label: 'Mon analyse', icon: Shield },
   { id: 'sources', label: 'Sources', icon: Radio },
 ]
 
 export default function App() {
-  const [page, setPage] = useState('dashboard')
+  const [page, setPage] = useState(() => {
+  const path = window.location.pathname.replace('/', '') || 'dashboard'
+  return path
+})
   const [menuOpen, setMenuOpen] = useState(false)
 
-  const pages = { dashboard: Dashboard, cves: CVEList, search: AdvancedSearch, sources: Sources }
+  const pages = {
+    dashboard: Dashboard,
+    cves: CVEList,
+    search: AdvancedSearch,
+    stack: StackAnalyzer,     
+    'stack-results': StackResults,  
+    sources: Sources,
+  }
   const Page = pages[page]
+
+  const navigate = (id) => {
+  window.history.pushState({}, '', `/${id}`)
+  setPage(id)
+  setMenuOpen(false)
+}
+
 
   return (
     <div className="min-h-screen bg-gray-950 text-white flex h-screen overflow-hidden">
