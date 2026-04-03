@@ -22,6 +22,7 @@ class Settings:
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
     ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
+    DEEPSEEK_API_KEY: str = os.getenv("DEEPSEEK_API_KEY", "")
 
     # === Clés API Sources ===
     GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN", "")  # optionnel, augmente les limites
@@ -35,6 +36,12 @@ class Settings:
     # === Paramètres de collecte ===
     NVD_DAYS_BACK: int = int(os.getenv("NVD_DAYS_BACK", "1"))  # CVE des dernières X jours
     MAX_CVE_PER_RUN: int = int(os.getenv("MAX_CVE_PER_RUN", "100"))  # limite par collecte
+
+    # === Sécurité — Analyse de stack ===
+    # Limite le nombre de CVE envoyés à DeepSeek par analyse
+    STACK_MAX_CVES_ANALYZE: int = int(os.getenv("STACK_MAX_CVES_ANALYZE", "50"))
+    # Limite le nombre d'analyses par heure (anti-abus)
+    STACK_RATE_LIMIT: int = int(os.getenv("STACK_RATE_LIMIT", "10"))
 
 # Instance globale — on importe ça partout dans le projet
 settings = Settings()

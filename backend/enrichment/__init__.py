@@ -6,11 +6,15 @@ from config import settings
 def get_llm():
     """
     Retourne l'adaptateur IA selon la config .env
-    LLM_PROVIDER = gemini | groq | claude
+    LLM_PROVIDER = deepseek | gemini | groq | claude
     """
     provider = settings.LLM_PROVIDER.lower()
 
-    if provider == "gemini":
+    if provider == "deepseek":
+        from enrichment.deepseek import DeepSeekLLM
+        return DeepSeekLLM()
+
+    elif provider == "gemini":
         from enrichment.gemini import GeminiLLM
         return GeminiLLM()
 
@@ -23,6 +27,15 @@ def get_llm():
         return ClaudeLLM()
 
     else:
-        print(f"  Provider '{provider}' inconnu — Gemini utilisé par défaut")
-        from enrichment.gemini import GeminiLLM
-        return GeminiLLM()
+        print(f" Provider '{provider}' inconnu — Groq utilisé par défaut")
+        from enrichment.groq import GroqLLM
+        return GroqLLM()
+
+
+def get_deepseek():
+    """
+    Retourne toujours DeepSeek — utilisé spécifiquement
+    pour l'analyse de stack (indépendant du provider par défaut).
+    """
+    from enrichment.deepseek import DeepSeekLLM
+    return DeepSeekLLM()

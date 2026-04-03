@@ -10,7 +10,7 @@ from collectors.scheduler import (
     setup_scheduler, stop_scheduler,
     task_nvd, task_cisa, task_github, task_exploitdb
 )
-from api.routes import cve, stats, sources
+from api.routes import cve, stats, sources, analyze
 import asyncio
 
 
@@ -71,6 +71,7 @@ app = FastAPI(
 app.include_router(cve.router)
 app.include_router(stats.router)
 app.include_router(sources.router)
+app.include_router(analyze.router)
 
 
 # CORS — permet au frontend React de communiquer avec le backend

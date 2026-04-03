@@ -31,3 +31,6 @@ groq==0.13.0
 
 # === IA — Claude (optionnel) ===
 anthropic==0.42.0
+
+# === Open AI DeepSeek ===
+openai==1.58.1 
