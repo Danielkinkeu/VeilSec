@@ -39,6 +39,13 @@ export default function App() {
   window.history.pushState({}, '', `/${id}`)
   setPage(id)
   setMenuOpen(false)
+
+  useEffect(() => {
+  const handler = (e) => setPage(e.detail)
+  window.addEventListener('navigate', handler)
+  return () => window.removeEventListener('navigate', handler)
+}, [])
+
 }
 
 
