@@ -64,7 +64,7 @@ export default function StackResults() {
     const r = loadResults()
     const s = loadStack()
     if (!r) {
-      window.location.href = '/stack-analyzer'
+      window.dispatchEvent(new CustomEvent('navigate', { detail: 'stack' }))
       return
     }
     setResults(r)
@@ -94,7 +94,7 @@ export default function StackResults() {
       <div className="flex items-start justify-between">
         <div>
           <button
-            onClick={() => window.location.href = '/stack-analyzer'}
+            onClick={() => window.dispatchEvent(new CustomEvent('navigate', { detail: 'stack' }))}
             className="flex items-center gap-2 text-gray-400 hover:text-white text-sm mb-3 transition-colors"
           >
             <ChevronLeft size={16} />
@@ -114,7 +114,7 @@ export default function StackResults() {
         </div>
 
         <button
-          onClick={() => { clearStack(); window.location.href = '/stack-analyzer' }}
+          onClick={() => { clearStack(); window.dispatchEvent(new CustomEvent('navigate', { detail: 'stack' })) }}
           className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-300 border border-gray-700 px-3 py-1.5 rounded-lg transition-colors"
         >
           <RefreshCw size={12} />

@@ -266,7 +266,7 @@ export default function StackAnalyzer() {
       saveResults(results)
 
       // Rediriger vers la page de résultats
-      window.location.href = '/stack-results'
+      window.dispatchEvent(new CustomEvent('navigate', { detail: 'stack-results' }))
 
     } catch (err) {
       setError('Erreur lors de l\'analyse. Vérifiez votre connexion.')
