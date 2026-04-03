@@ -27,15 +27,15 @@ async def delayed_collections():
     )
 
     # Attendre que Render détecte le port avant de lancer les collectes
-    print("⏳ Attente de 30s avant les collectes initiales...")
+    print(" Attente de 30s avant les collectes initiales...")
     await asyncio.sleep(30)
 
-    print("🚀 Démarrage des collectes initiales en arrière-plan...")
+    print(" Démarrage des collectes initiales en arrière-plan...")
     await task_nvd()
     await task_cisa()
     await task_github()
     await task_exploitdb()
-    print("✅ Toutes les collectes initiales terminées")
+    print(" Toutes les collectes initiales terminées")
 
 
 @asynccontextmanager
@@ -59,7 +59,7 @@ async def lifespan(app: FastAPI):
     """
     print(f"""
 ╔══════════════════════════════════════╗
-║         🛡️  VeilSec v{settings.VERSION}            ║
+║           VeilSec v{settings.VERSION}            ║
 ║    Vulnerability Intelligence Hub    ║
 ╚══════════════════════════════════════╝
     """)
@@ -77,13 +77,13 @@ async def lifespan(app: FastAPI):
     # pendant que les collectes tournent en parallèle
     asyncio.create_task(delayed_collections())
 
-    print("🟢 Serveur prêt et disponible — collectes programmées dans 30s")
+    print(" Serveur prêt et disponible — collectes programmées dans 30s")
 
     yield  # Le serveur tourne ici jusqu'à l'arrêt
 
     # Arrêt propre du scheduler
     stop_scheduler()
-    print("👋 VeilSec arrêté proprement")
+    print(" VeilSec arrêté proprement")
 
 
 # ─── Création de l'application FastAPI ────────────────────────────
