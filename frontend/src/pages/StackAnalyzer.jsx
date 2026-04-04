@@ -1,30 +1,31 @@
 // frontend/src/pages/StackAnalyzer.jsx
-import { useState, useEffect, useNavigate } from 'react'
-// import {  } from 'react-router-dom'
+
+import { useState, useEffect } from 'react'
 import {
-  Shield, ChevronRight, AlertTriangle, Info,
+  Shield, AlertTriangle,
   Monitor, Globe, Code, Database, Package,
   Server, Layout, RotateCcw, Search
 } from 'lucide-react'
 import { analyzeStack } from '../api/client'
 import { saveStack, saveResults, loadStack, clearStack } from '../utils/stackStorage'
 import RGPDBanner from '../components/RGPDBanner'
+import StackResultsModal from '../components/StackResultsModal'
 
-// ─── Données de la stack ───────────────────────────────────────────
+// ─── Configuration des technologies disponibles ────────────────────
 const STACK_CONFIG = {
   os: {
     label: "Système d'exploitation",
     icon: Monitor,
     color: "blue",
     options: [
-      { value: 'linux', label: 'Linux (générique)' },
-      { value: 'ubuntu', label: 'Ubuntu' },
-      { value: 'debian', label: 'Debian' },
-      { value: 'centos', label: 'CentOS' },
-      { value: 'redhat', label: 'Red Hat' },
+      { value: 'linux',   label: 'Linux (générique)' },
+      { value: 'ubuntu',  label: 'Ubuntu' },
+      { value: 'debian',  label: 'Debian' },
+      { value: 'centos',  label: 'CentOS' },
+      { value: 'redhat',  label: 'Red Hat' },
       { value: 'windows', label: 'Windows Server' },
-      { value: 'macos', label: 'macOS' },
-      { value: 'alpine', label: 'Alpine Linux' },
+      { value: 'macos',   label: 'macOS' },
+      { value: 'alpine',  label: 'Alpine Linux' },
     ]
   },
   serveurs_web: {
@@ -32,11 +33,11 @@ const STACK_CONFIG = {
     icon: Globe,
     color: "green",
     options: [
-      { value: 'apache', label: 'Apache HTTP Server' },
-      { value: 'nginx', label: 'Nginx' },
-      { value: 'iis', label: 'IIS (Microsoft)' },
-      { value: 'tomcat', label: 'Apache Tomcat' },
-      { value: 'caddy', label: 'Caddy' },
+      { value: 'apache',   label: 'Apache HTTP Server' },
+      { value: 'nginx',    label: 'Nginx' },
+      { value: 'iis',      label: 'IIS (Microsoft)' },
+      { value: 'tomcat',   label: 'Apache Tomcat' },
+      { value: 'caddy',    label: 'Caddy' },
       { value: 'lighttpd', label: 'Lighttpd' },
     ]
   },
@@ -45,15 +46,15 @@ const STACK_CONFIG = {
     icon: Code,
     color: "purple",
     options: [
-      { value: 'php', label: 'PHP' },
+      { value: 'php',    label: 'PHP' },
       { value: 'python', label: 'Python' },
-      { value: 'java', label: 'Java' },
+      { value: 'java',   label: 'Java' },
       { value: 'nodejs', label: 'Node.js' },
-      { value: 'ruby', label: 'Ruby' },
-      { value: 'go', label: 'Go' },
-      { value: 'rust', label: 'Rust' },
-      { value: '.net', label: '.NET / C#' },
-      { value: 'perl', label: 'Perl' },
+      { value: 'ruby',   label: 'Ruby' },
+      { value: 'go',     label: 'Go' },
+      { value: 'rust',   label: 'Rust' },
+      { value: '.net',   label: '.NET / C#' },
+      { value: 'perl',   label: 'Perl' },
     ]
   },
   bases_de_donnees: {
@@ -61,14 +62,14 @@ const STACK_CONFIG = {
     icon: Database,
     color: "orange",
     options: [
-      { value: 'mysql', label: 'MySQL' },
-      { value: 'postgresql', label: 'PostgreSQL' },
-      { value: 'mongodb', label: 'MongoDB' },
-      { value: 'redis', label: 'Redis' },
-      { value: 'mssql', label: 'Microsoft SQL Server' },
-      { value: 'sqlite', label: 'SQLite' },
-      { value: 'mariadb', label: 'MariaDB' },
-      { value: 'oracle', label: 'Oracle DB' },
+      { value: 'mysql',         label: 'MySQL' },
+      { value: 'postgresql',    label: 'PostgreSQL' },
+      { value: 'mongodb',       label: 'MongoDB' },
+      { value: 'redis',         label: 'Redis' },
+      { value: 'mssql',         label: 'Microsoft SQL Server' },
+      { value: 'sqlite',        label: 'SQLite' },
+      { value: 'mariadb',       label: 'MariaDB' },
+      { value: 'oracle',        label: 'Oracle DB' },
       { value: 'elasticsearch', label: 'Elasticsearch' },
     ]
   },
@@ -77,16 +78,16 @@ const STACK_CONFIG = {
     icon: Package,
     color: "pink",
     options: [
-      { value: 'django', label: 'Django' },
-      { value: 'flask', label: 'Flask' },
-      { value: 'laravel', label: 'Laravel' },
-      { value: 'symfony', label: 'Symfony' },
-      { value: 'spring', label: 'Spring Boot' },
-      { value: 'express', label: 'Express.js' },
-      { value: 'rails', label: 'Ruby on Rails' },
+      { value: 'django',    label: 'Django' },
+      { value: 'flask',     label: 'Flask' },
+      { value: 'laravel',   label: 'Laravel' },
+      { value: 'symfony',   label: 'Symfony' },
+      { value: 'spring',    label: 'Spring Boot' },
+      { value: 'express',   label: 'Express.js' },
+      { value: 'rails',     label: 'Ruby on Rails' },
       { value: 'wordpress', label: 'WordPress' },
-      { value: 'drupal', label: 'Drupal' },
-      { value: 'joomla', label: 'Joomla' },
+      { value: 'drupal',    label: 'Drupal' },
+      { value: 'joomla',    label: 'Joomla' },
     ]
   },
   infrastructure: {
@@ -94,55 +95,68 @@ const STACK_CONFIG = {
     icon: Server,
     color: "yellow",
     options: [
-      { value: 'docker', label: 'Docker' },
+      { value: 'docker',     label: 'Docker' },
       { value: 'kubernetes', label: 'Kubernetes' },
-      { value: 'openssl', label: 'OpenSSL' },
-      { value: 'jenkins', label: 'Jenkins' },
-      { value: 'gitlab', label: 'GitLab' },
-      { value: 'vmware', label: 'VMware' },
-      { value: 'openssh', label: 'OpenSSH' },
+      { value: 'openssl',    label: 'OpenSSL' },
+      { value: 'jenkins',    label: 'Jenkins' },
+      { value: 'gitlab',     label: 'GitLab' },
+      { value: 'vmware',     label: 'VMware' },
+      { value: 'openssh',    label: 'OpenSSH' },
     ]
   },
 }
 
-// Profils prédéfinis
+// ─── Profils prédéfinis pour démarrage rapide ──────────────────────
 const PROFILES = [
   {
-    label: ' Serveur Web Classique',
+    label: '🌐 Serveur Web Classique',
     desc: 'Linux + Apache + PHP + MySQL',
     data: { os: ['linux'], serveurs_web: ['apache'], langages: ['php'], bases_de_donnees: ['mysql'] }
   },
   {
-    label: ' Stack Cloud Moderne',
+    label: '☁️ Stack Cloud Moderne',
     desc: 'Linux + Nginx + Node.js + PostgreSQL + Docker',
     data: { os: ['linux'], serveurs_web: ['nginx'], langages: ['nodejs'], bases_de_donnees: ['postgresql'], infrastructure: ['docker'] }
   },
   {
-    label: ' Entreprise Microsoft',
+    label: '💼 Entreprise Microsoft',
     desc: 'Windows Server + IIS + .NET + MSSQL',
     data: { os: ['windows'], serveurs_web: ['iis'], langages: ['.net'], bases_de_donnees: ['mssql'] }
   },
   {
-    label: ' Stack Python',
+    label: '🐍 Stack Python',
     desc: 'Linux + Nginx + Python + PostgreSQL',
     data: { os: ['linux'], serveurs_web: ['nginx'], langages: ['python'], bases_de_donnees: ['postgresql'] }
   },
   {
-    label: ' E-Commerce',
+    label: '🛒 E-Commerce',
     desc: 'Linux + Apache + WordPress + MySQL',
     data: { os: ['linux'], serveurs_web: ['apache'], langages: ['php'], frameworks: ['wordpress'], bases_de_donnees: ['mysql'] }
   },
   {
-    label: ' Stack Java',
+    label: '☕ Stack Java',
     desc: 'Linux + Tomcat + Java + MySQL',
     data: { os: ['linux'], serveurs_web: ['tomcat'], langages: ['java'], bases_de_donnees: ['mysql'] }
   },
 ]
 
+// ─── État initial vide de la stack ────────────────────────────────
+const EMPTY_STACK = {
+  os: [],
+  os_versions: [],
+  serveurs_web: [],
+  langages: [],
+  bases_de_donnees: [],
+  frameworks: [],
+  infrastructure: [],
+  cms: [],
+}
+
 // ─── Composant de sélection de technologies ───────────────────────
 function TechSelector({ configKey, config, selected, onChange }) {
   const Icon = config.icon
-  const colors = {
+
+  const containerColors = {
     blue:   'border-blue-500/30 bg-blue-500/5',
     green:  'border-green-500/30 bg-green-500/5',
     purple: 'border-purple-500/30 bg-purple-500/5',
@@ -150,6 +164,7 @@ function TechSelector({ configKey, config, selected, onChange }) {
     pink:   'border-pink-500/30 bg-pink-500/5',
     yellow: 'border-yellow-500/30 bg-yellow-500/5',
   }
+
   const activeColors = {
     blue:   'bg-blue-500/20 border-blue-400/50 text-blue-300',
     green:  'bg-green-500/20 border-green-400/50 text-green-300',
@@ -159,6 +174,11 @@ function TechSelector({ configKey, config, selected, onChange }) {
     yellow: 'bg-yellow-500/20 border-yellow-400/50 text-yellow-300',
   }
 
+  /**
+   * Bascule la sélection d'une technologie.
+   * Si déjà sélectionnée → désélectionner.
+   * Si non sélectionnée → ajouter.
+   */
   const toggle = (value) => {
     if (selected.includes(value)) {
       onChange(selected.filter(v => v !== value))
@@ -168,7 +188,7 @@ function TechSelector({ configKey, config, selected, onChange }) {
   }
 
   return (
-    <div className={`border rounded-xl p-4 ${colors[config.color]}`}>
+    <div className={`border rounded-xl p-4 ${containerColors[config.color]}`}>
       <div className="flex items-center gap-2 mb-3">
         <Icon size={16} className="text-gray-400" />
         <h3 className="text-white font-medium text-sm">{config.label}</h3>
@@ -199,53 +219,66 @@ function TechSelector({ configKey, config, selected, onChange }) {
 
 // ─── Page principale ───────────────────────────────────────────────
 export default function StackAnalyzer() {
-  const [stack, setStack] = useState({
-    os: [], os_versions: [], serveurs_web: [],
-    langages: [], bases_de_donnees: [],
-    frameworks: [], infrastructure: [], cms: []
-  })
+  // État de la stack sélectionnée par l'utilisateur
+  const [stack, setStack] = useState(EMPTY_STACK)
+
+  // Résultats de l'analyse — null = modal fermée
+  const [results, setResults] = useState(null)
+
+  // États UI
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [showRGPD, setShowRGPD] = useState(true)
-  const [hasSavedStack, setHasSavedStack] = useState(false)
 
+  // Charger un profil sauvegardé en SessionStorage si disponible
   useEffect(() => {
-    // Charger un profil sauvegardé si disponible
     const saved = loadStack()
     if (saved) {
       setStack(saved)
-      setHasSavedStack(true)
     }
   }, [])
 
+  /**
+   * Met à jour une catégorie de la stack.
+   */
   const updateStack = (key, values) => {
     setStack(prev => ({ ...prev, [key]: values }))
   }
 
+  /**
+   * Applique un profil prédéfini en réinitialisant
+   * d'abord toutes les catégories.
+   */
   const applyProfile = (profile) => {
-    setStack(prev => ({
-      ...prev,
-      os: [], os_versions: [], serveurs_web: [],
-      langages: [], bases_de_donnees: [],
-      frameworks: [], infrastructure: [], cms: [],
-      ...profile.data
-    }))
+    setStack({ ...EMPTY_STACK, ...profile.data })
   }
 
+  /**
+   * Réinitialise complètement la stack et le SessionStorage.
+   */
   const reset = () => {
     clearStack()
-    setStack({
-      os: [], os_versions: [], serveurs_web: [],
-      langages: [], bases_de_donnees: [],
-      frameworks: [], infrastructure: [], cms: []
-    })
-    setHasSavedStack(false)
+    setStack(EMPTY_STACK)
+    setResults(null)
+    setError(null)
   }
 
+  // Nombre total de technologies sélectionnées
   const totalSelected = Object.values(stack)
     .filter(Array.isArray)
     .reduce((sum, arr) => sum + arr.length, 0)
 
+  /**
+   * Lance l'analyse de la stack :
+   * 1. Sauvegarde en SessionStorage (données locales uniquement)
+   * 2. Appel API avec uniquement les noms de technologies
+   * 3. Affiche les résultats dans une modal
+   *
+   * Justification sécurité :
+   * - SessionStorage → données supprimées à la fermeture de l'onglet
+   * - On n'envoie jamais d'IP, de domaine ou de données personnelles
+   * - Rate limiting côté serveur (10 analyses/heure/IP)
+   */
   const handleAnalyze = async () => {
     if (totalSelected === 0) {
       setError('Veuillez sélectionner au moins une technologie')
@@ -255,22 +288,26 @@ export default function StackAnalyzer() {
     setLoading(true)
     setError(null)
 
-    try{
-      // Sauvegarder le profil en SessionStorage
+    try {
+      // Sauvegarder localement avant l'envoi
       saveStack(stack)
 
-      // Appel API — on n'envoie que des noms de technologies
-      const results = await analyzeStack(stack)
+      // Appel API — uniquement des noms de technologies, jamais de PII
+      const data = await analyzeStack(stack)
 
-      // Sauvegarder les résultats en SessionStorage
-      saveResults(results)
+      // Sauvegarder les résultats localement
+      saveResults(data)
 
-      // Rediriger vers la page de résultats
-      window.dispatchEvent(new CustomEvent('navigate', { detail: 'stack-results' }))
+      // Afficher la modal des résultats
+      setResults(data)
 
     } catch (err) {
-      setError('Erreur lors de l\'analyse. Vérifiez votre connexion.')
-      console.error(err)
+      console.error('Erreur analyse stack:', err)
+      setError(
+        err?.response?.status === 429
+          ? 'Trop d\'analyses en peu de temps. Réessayez dans une heure.'
+          : 'Erreur lors de l\'analyse. Vérifiez votre connexion et réessayez.'
+      )
     } finally {
       setLoading(false)
     }
@@ -288,8 +325,8 @@ export default function StackAnalyzer() {
           Mon analyse de sécurité
         </h1>
         <p className="text-gray-400 text-sm mt-2">
-          Déclarez votre stack technique pour voir uniquement les vulnérabilités qui vous concernent,
-          sur toute la base historique.
+          Déclarez votre stack technique pour voir uniquement les vulnérabilités
+          qui vous concernent, sur toute la base historique.
         </p>
       </div>
 
@@ -299,8 +336,8 @@ export default function StackAnalyzer() {
         <div className="text-sm">
           <p className="text-amber-300 font-medium">Important</p>
           <p className="text-gray-400 mt-0.5">
-            Ne saisissez jamais d'adresses IP, de noms de domaine ou d'informations d'identification.
-            Indiquez uniquement les technologies utilisées.
+            Ne saisissez jamais d'adresses IP, de noms de domaine ou
+            d'informations d'identification. Indiquez uniquement les technologies utilisées.
           </p>
         </div>
       </div>
@@ -310,7 +347,9 @@ export default function StackAnalyzer() {
         <h2 className="text-white font-medium mb-3 flex items-center gap-2">
           <Layout size={16} className="text-gray-400" />
           Profils prédéfinis
-          <span className="text-gray-500 text-xs font-normal">— choisissez un profil pour démarrer rapidement</span>
+          <span className="text-gray-500 text-xs font-normal">
+            — choisissez un profil pour démarrer rapidement
+          </span>
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {PROFILES.map(profile => (
@@ -348,7 +387,7 @@ export default function StackAnalyzer() {
         ))}
       </div>
 
-      {/* Erreur */}
+      {/* Message d'erreur */}
       {error && (
         <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
           <AlertTriangle size={14} className="text-red-400 shrink-0" />
@@ -387,22 +426,34 @@ export default function StackAnalyzer() {
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
           >
             {loading ? (
-  <>
-    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-    <span>Analyse en cours... (30-60s)</span>
-  </>
-) : (
-  <>
-    <Search size={16} />
-    Analyser ma stack
-  </>
-)}
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Analyse en cours... (30-60s)</span>
+              </>
+            ) : (
+              <>
+                <Search size={16} />
+                Analyser ma stack
+              </>
+            )}
           </button>
         </div>
       </div>
 
-      {/* Bannière RGPD */}
-      {showRGPD && <RGPDBanner onAccept={() => setShowRGPD(false)} />}
+      {/* Modal des résultats — s'affiche par-dessus la page */}
+      {results && (
+        <StackResultsModal
+          results={results}
+          stack={stack}
+          onClose={() => setResults(null)}
+        />
+      )}
+
+      {/* Bannière RGPD — s'affiche en bas de page */}
+      {showRGPD && (
+        <RGPDBanner onAccept={() => setShowRGPD(false)} />
+      )}
+
     </div>
   )
 }
