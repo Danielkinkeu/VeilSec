@@ -8,10 +8,28 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+
+  build: {
+    // Avertissement si un chunk dépasse 800kb
+    chunkSizeWarningLimit: 800,
+    rollupOptions: {
+      output: {
+        // Séparer les dépendances lourdes en chunks indépendants
+        // → meilleur cache navigateur
+        manualChunks: {
+          'vendor-react':   ['react', 'react-dom'],
+          'vendor-charts':  ['recharts'],
+          'vendor-icons':   ['lucide-react'],
+          'vendor-http':    ['axios'],
+          'vendor-pdf':     ['jspdf', 'jspdf-autotable'],
+        }
+      }
+    }
+  },
+
   server: {
     proxy: {
       '/api': 'https://veilsec.onrender.com'
-      // '/api': 'http://localhost:8000'
     }
   }
 })
