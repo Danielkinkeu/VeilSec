@@ -1,0 +1,9 @@
+# VeilSec — robots.txt
+User-agent: *
+Allow: /
+
+# Bloquer les pages non pertinentes pour le SEO
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://veil-sec.vercel.app/sitemap.xml

@@ -5,8 +5,69 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/shield.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="VeilSec — Plateforme de veille sécuritaire alimentée par IA" />
-    <title>VeilSec — Vulnerability Intelligence Hub</title>
+
+    <!-- ─── SEO de base ─────────────────────────────────────────── -->
+    <title>VeilSec — Veille sécuritaire CVE alimentée par IA</title>
+    <meta name="description" content="VeilSec agrège automatiquement les vulnérabilités CVE depuis NVD, CISA KEV, GitHub Advisory et Exploit-DB. Analysez l'exposition de votre infrastructure et recevez des recommandations IA personnalisées en français." />
+    <meta name="keywords" content="CVE, vulnérabilités, cybersécurité, veille sécuritaire, CISA KEV, NVD NIST, analyse de risque, intelligence artificielle, sécurité informatique, failles, exploit" />
+    <meta name="author" content="Daniel Kinkeu — VeilSec" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="French" />
+    <meta name="revisit-after" content="1 days" />
+    <link rel="canonical" href="https://veil-sec.vercel.app" />
+
+    <!-- ─── Open Graph ──────────────────────────────────────────── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://veil-sec.vercel.app" />
+    <meta property="og:title"       content="VeilSec — Veille sécuritaire CVE alimentée par IA" />
+    <meta property="og:description" content="Plateforme open source de veille sécuritaire. Agrège les CVE depuis NVD, CISA, GitHub Advisory. Analysez votre stack et obtenez des recommandations IA personnalisées." />
+    <meta property="og:image"       content="https://veil-sec.vercel.app/og-image.png" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale"      content="fr_FR" />
+    <meta property="og:site_name"   content="VeilSec" />
+
+    <!-- ─── Twitter Card ───────────────────────────────────────── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="VeilSec — Veille sécuritaire CVE alimentée par IA" />
+    <meta name="twitter:description" content="Analysez les vulnérabilités qui concernent votre infrastructure. Alimenté par IA. Gratuit et open source." />
+    <meta name="twitter:image"       content="https://veil-sec.vercel.app/og-image.png" />
+
+    <!-- ─── Schema.org ─────────────────────────────────────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "VeilSec",
+      "url": "https://veil-sec.vercel.app",
+      "description": "Plateforme de veille sécuritaire CVE alimentée par intelligence artificielle. Agrège NVD, CISA KEV, GitHub Advisory et Exploit-DB.",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "Web",
+      "inLanguage": "fr",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Daniel Kinkeu",
+        "url": "https://github.com/Danielkinkeu"
+      },
+      "featureList": [
+        "Collecte automatique de CVE",
+        "Enrichissement IA en français",
+        "Analyse de stack personnalisée",
+        "Export PDF professionnel",
+        "Recherche avancée multi-critères"
+      ]
+    }
+    </script>
+
+    <!-- ─── Performance ────────────────────────────────────────── -->
+    <link rel="preconnect" href="https://veilsec.onrender.com" />
+    <link rel="dns-prefetch" href="https://veilsec.onrender.com" />
   </head>
   <body>
     <div id="root"></div>

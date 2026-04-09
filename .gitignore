@@ -10,6 +10,7 @@ env/
 # Base de données
 *.db
 *.sqlite3
+*.sql
 
 # Node
 node_modules/
@@ -28,3 +29,4 @@ Thumbs.db
 
 # Script
 int.sh
+backup_veilsec.sh
