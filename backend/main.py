@@ -108,7 +108,7 @@ app.add_middleware(
         "https://veil-sec.vercel.app",  # Production Vercel
         "https://veilsec.vercel.app",   # Production Vercel (variante)
         "https://*.vercel.app",         # Previews Vercel
-        "https://veilsec.matrix-tech.fr/",  # Nouveau domaine
+        "https://veilsec.matrix-tech.fr",  # Nouveau domaine
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -156,6 +156,7 @@ async def root():
         "message": f"Bienvenue sur {settings.PROJECT_NAME} v{settings.VERSION}",
         "documentation": "/docs",
         "health": "/health",
+        "statistiques": "/api/stats",
         "api": {
             "cves": "/api/cves",
             "stats": "/api/stats",
