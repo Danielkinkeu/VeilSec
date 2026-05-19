@@ -108,6 +108,7 @@ app.add_middleware(
         "https://veil-sec.vercel.app",  # Production Vercel
         "https://veilsec.vercel.app",   # Production Vercel (variante)
         "https://*.vercel.app",         # Previews Vercel
+        "https://veilsec.matrix-tech.fr/",  # Nouveau domaine
     ],
     allow_credentials=True,
     allow_methods=["*"],
